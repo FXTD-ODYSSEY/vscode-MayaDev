@@ -3,8 +3,8 @@
  *--------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mel_data from '../data/mel.json';
-import * as cmds_data from '../data/cmds.json';
+import * as mel_data from './data/mel.json';
+import * as cmds_data from './data/cmds.json';
 
 
 export class TimeUtils {
@@ -147,6 +147,20 @@ export function activate(context: vscode.ExtensionContext) {
 					cmds_args.push(item);
 				});
 
+				Logger.info(`mode: ${cmds_data['completions'][func]['mode']}`);
+				for (let mode in cmds_data['completions'][func]['mode']){
+					if(mode == "query"){
+						let item = new vscode.CompletionItem(`q=`, vscode.CompletionItemKind.Function);
+						item.detail = `query [boolean]`;
+						item.documentation = `enable query mode`;
+						cmds_args.push(item);
+					} else if (mode == "edit"){
+						let item = new vscode.CompletionItem(`e=`, vscode.CompletionItemKind.Function);
+						item.detail = `edit [boolean]`;
+						item.documentation = `enable edit mode`;
+						cmds_args.push(item);
+					}
+				}
 				return [...cmds_args];
 			}
 		},

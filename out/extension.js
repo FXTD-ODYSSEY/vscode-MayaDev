@@ -11,8 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const vscode = __importStar(require("vscode"));
-const mel_data = __importStar(require("./mel.json"));
-const cmds_data = __importStar(require("./cmds.json"));
+const cmds_data = __importStar(require("./data/cmds.json"));
 class TimeUtils {
     static getTime() {
         return new Date()
@@ -59,13 +58,13 @@ function activate(context) {
     let mel_completions = [];
     let cmds_completions = [];
     // NOTE 初始化插件的时候 
-    // NOTE 获取 MEL 数据存放到数组当中
-    mel_data['completions'].forEach(this_item => {
-        let item = new vscode.CompletionItem(this_item['trigger'], vscode.CompletionItemKind.Function);
-        item.detail = this_item['trigger'];
-        item.documentation = this_item['comment'];
-        mel_completions.push(item);
-    });
+    // // NOTE 获取 MEL 数据存放到数组当中
+    // mel_data['completions'].forEach(this_item => {
+    // 	let item = new vscode.CompletionItem(this_item['trigger'], vscode.CompletionItemKind.Function);
+    // 	item.detail = this_item['trigger'];
+    // 	item.documentation = this_item['comment'];
+    // 	mel_completions.push(item);
+    // });
     // NOTE 获取 cmds 数据存放到数组当中
     for (let command in cmds_data['completions']) {
         let item = new vscode.CompletionItem(command, vscode.CompletionItemKind.Function);
@@ -125,6 +124,21 @@ function activate(context) {
                 item.documentation = this_item['instruction'];
                 cmds_args.push(item);
             });
+            Logger.info(`mode: ${cmds_data['completions'][func]['mode']}`);
+            for (let mode in cmds_data['completions'][func]['mode']) {
+                if (mode == "query") {
+                    let item = new vscode.CompletionItem(`q=`, vscode.CompletionItemKind.Function);
+                    item.detail = `query [boolean]`;
+                    item.documentation = `enable query mode`;
+                    cmds_args.push(item);
+                }
+                else if (mode == "edit") {
+                    let item = new vscode.CompletionItem(`e=`, vscode.CompletionItemKind.Function);
+                    item.detail = `edit [boolean]`;
+                    item.documentation = `enable edit mode`;
+                    cmds_args.push(item);
+                }
+            }
             return [...cmds_args];
         }
     }, '(', ',');
