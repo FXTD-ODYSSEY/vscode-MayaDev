@@ -3,9 +3,8 @@
  *--------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as mel_data from './mel.json';
-import * as cmds_data from './cmds.json';
-
+import * as mel_data from '../data/mel.json';
+import * as cmds_data from '../data/cmds.json';
 
 
 export class TimeUtils {
@@ -64,13 +63,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// NOTE 初始化插件的时候 
 
-	// NOTE 获取 MEL 数据存放到数组当中
-	mel_data['completions'].forEach(this_item => {
-		let item = new vscode.CompletionItem(this_item['trigger'], vscode.CompletionItemKind.Function);
-		item.detail = this_item['trigger'];
-		item.documentation = this_item['comment'];
-		mel_completions.push(item);
-	});
+	// // NOTE 获取 MEL 数据存放到数组当中
+	// mel_data['completions'].forEach(this_item => {
+	// 	let item = new vscode.CompletionItem(this_item['trigger'], vscode.CompletionItemKind.Function);
+	// 	item.detail = this_item['trigger'];
+	// 	item.documentation = this_item['comment'];
+	// 	mel_completions.push(item);
+	// });
 
 	// NOTE 获取 cmds 数据存放到数组当中
 	for (let command in cmds_data['completions']){
