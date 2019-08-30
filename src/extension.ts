@@ -77,8 +77,9 @@ export function activate(context: vscode.ExtensionContext) {
 		item.detail = command;
 
 		// doc = cmds['completions'][command]['instruction'];
-		
-		item.documentation = cmds_data['completions'][command]['instruction'];
+		const instruction = new vscode.MarkdownString(cmds_data['completions'][command]['instruction']);
+		instruction.isTrusted = true;
+		item.documentation = instruction;
 		cmds_completions.push(item);
 	}
 
