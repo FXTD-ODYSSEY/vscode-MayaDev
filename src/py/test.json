@@ -1,0 +1,63 @@
+{
+	"OpenMayaAnim": {
+		"MAnimMessage": {
+			"instruction": "Animation messages.\n\nThis class is used to register callbacks for animation messages.\n\nTo remove a callback use MMessage::removeCallback. All callbacks that are\nregistered by a plug-in must be removed by that plug-in when it is unloaded.\nFailure to do so will result in a fatal error.",
+			"method": {
+				"addPostBakeResultsCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "a4ac5c413f4a746f44db7b6844bf41938",
+					"param": "[in]  MMessage::MPlugsDGModFunction func            the callback function \n\n  * plugArray the baked plugs to which the resulting anim curves will be connected. The plugs can be replaced, but must have the same number of plugs. \n  * modifier the DGModifier. Used if bakeResults command is undone or redone. \n  * clientData User defined data passed to the callback function\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} status code\n",
+					"description": "Post Bake Simulation callback.\n\nThis method registers a callback that is called from bakeResults command after\nthe simulation.\n\nIf the plugArray is replaced, then the anim curves created from baking will be\nconnected to the new plugs."
+				},
+				"addAnimKeyframeEditedCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "ae147016e111212cd24da0cc573f54055",
+					"param": "[in]  MObject &            animNode        the param curve node you want to watch.\n[in]  MMessage::MNodeObjArray func            The callback function.\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} Status code.\n",
+					"description": "This method is obsolete. This method is not available in Python."
+				},
+				"addNodeAnimKeyframeEditedCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "a1b6e1e69e2ec9d3bf457ec36136f2024",
+					"param": "[in]  MObject &            animNode        the param curve node you want to watch.\n[in]  MMessage::MNodeObjArray func            the callback function\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} status code\n",
+					"description": "AnimCurve keyframe edited callback.\n\nThis method registers a callback that is called whenever an a group of keys\nare modified.\n\nThe callback is invoked once per atomic change to single or group of keyframes\non the specified animation curve node. For example, if a user selects a group\n5 of keys and moves them 5 units in the value axis, then a single callback\nevent will be invoked with a MObject for each of the 5 keyframes. The MObjects\ncan then be used in the MFnKeyframeDelta function set. Refer to\nMFnKeyframeDelta function set documentation for more info."
+				},
+				"addAnimKeyframeEditCheckCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "a1f2bca41c2351e62daa5e6f17b485bc6",
+					"param": "[in]  MMessage::MCheckPlugFunction func            the callback function \n\n  * retCode return code from callback, setting this to false will abort the keyframe action \n  * plug the plug being keyframed \n  * clientData User defined data passed to the callback function\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} status code\n",
+					"description": "AnimCurve keyframe edit check callback.\n\nThis method registers a callback that is used by the setKeyframe command to\nallow a user to consider the set keyframe request and cancel it if needed.\n\nThe callback method should return false to abort the keyframe setting."
+				},
+				"flushAnimKeyframeEditedCallbacks": {
+					"return": "[void]     ",
+					"anchor": "a25575dca79035df861e753d8ef6c68ac",
+					"param": "",
+					"description": "AnimCurve keyframe edited callback flush.\n\nAnimation keyframe edited callbacks are queued to only be issued on an idle\nevent.\n\nThere may be times when it is desired to issue the callback at a specific\ntime. This method provides this functionality. It will flush all animation\nkeyframe edited callbacks and force them to issue their callbacks with the\ndata contained within."
+				},
+				"className": {
+					"return": "[const char *] The name of this class.",
+					"anchor": "a774cd5d8fbebe8e7ed82a5aa587d1f04",
+					"param": "",
+					"description": "Returns the name of this class."
+				},
+				"addAnimCurveEditedCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "a3009ea655fcddeb0653526fc703542ae",
+					"param": "[in]  MMessage::MObjArray  func            The callback function.\n[in]  void *               clientData      {default:`NULL`} User defined data passed to the callback function.\n[out] MStatus *            ReturnStatus    {default:`NULL`} Status code.\n",
+					"description": "AnimCurve edited callback.\n\nThis method registers a callback that is called whenever an AnimCurve is\nedited."
+				},
+				"addPreBakeResultsCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "ad90a8a525b8716341992b9cb8b0e4f0e",
+					"param": "[in]  MMessage::MPlugsDGModFunction func            the callback function \n\n  * plugArray the plugs to be baked. The plugs can be replaced, but must have the same number of plugs. \n  * modifier the DGModifier. Used if bakeResults command is undone or redone. \n  * clientData User defined data passed to the callback function\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} status code\n",
+					"description": "Pre Bake Simulation callback.\n\nThis method registers a callback that is called from bakeResults command\nbefore the simulation.\n\nOne example usage is handle the runup to the first frame in a dynamic system.\nIf plugArray is set to zero length in the callback, the baking will be\naborted."
+				},
+				"addDisableImplicitControlCallback": {
+					"return": "[MCallbackId] Identifier used for removing the callback.",
+					"anchor": "a5b938d12045ae88e92b6fccf88de0cc2",
+					"param": "[in]  MMessage::MPlugsDGModFunction func            the callback function \n\n  * plugArray the baked plugs. \n  * modifier the DGModifier. Used if bakeResults command is undone or redone. \n  * clientData User defined data passed to the callback function\n[in]  void *               clientData      {default:`NULL`} User defined data.\n[out] MStatus *            ReturnStatus    {default:`NULL`} status code\n",
+					"description": "Disable Implicit Control callback.\n\nThis method registers a callback that is called from bakeResults command after\nbaking operation is completed, if disableImplicitControl is enabled.\n\nOne example usage of this callback is to create the anim curve that is used to\ndrive Maya rigidbody's bakeSimulationIndex, which defines if the rigid body\nshould take its input from anim curve or rigid body simulation."
+				}
+			}
+		}
+	}
+}
