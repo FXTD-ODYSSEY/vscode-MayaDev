@@ -128,39 +128,51 @@ def itemParser(content):
     # NOTE 提取 header
     header = parser.handle(header).replace("|", "").replace("---", "")
     header = header.encode("utf8").strip()
-    name = re.search(r'(.*?)\(', header).group(1).strip()
+    name = re.search(r'((?:.|\n)*?)\(', header).group(1).strip()
     func_name = name.split(" ")[-1]
-    return_type,keyword = header.split(func_name)
+
+    header_split = header.replace("(*)", "").split(func_name)
+    
+    return_type = header_split[0]
+    keyword = func_name.join(header_split[1:])
     
     # NOTE 根据 header 提取参数类型和默认值
-    keyword = re.search("\(((?:.|\n)*?)\)", keyword).group(1)
+    keyword = re.findall("\(((?:.|\n)*)\)", keyword)[-1]
     keywords = {}
     for line in keyword.split(","):
         line = line.strip()
         if not line:
             continue
+        
         if "\xc2\xa0" in line:
-            param_type,param_name = line.split("\xc2\xa0")
+            param_type, _, param_name = line.partition("\xc2\xa0")
+            param_name = param_name.replace("\xc2\xa0", "").strip()
         else:
-            param_type,param_name = line.split(" ")
+            param_type,_,param_name = line.rpartition(" ")
 
         if "=" in param_name:
             name, val = param_name.split("=")
-            keywords[name.strip()] = [param_type.strip(), val.strip()]
+            name = name.strip().split("[")[0].replace("*","")
+            keywords[name] = [param_type.strip(), val.strip()]
         else:
-            keywords[param_name.strip()] = [param_type.strip()]
-
+            name = param_name.strip().split("[")[0].replace("*", "")
+            keywords[name] = [param_type.strip()]
     
     # NOTE 提取 params
     params = ""
     for param in re.findall(r'<dl class="params">((?:.|\n)*?)</dl>', doc):
-        param = parser.handle(param).replace("|", "")
-        param = param.replace("---", "").strip()
-        for line in param.split("[")[1:]:
-            line = ("[%s" % line).strip()
-            name = re.search(r'\] (.*?) ', line).group(1)
-            inout,name,instruction = re.split(r'\] (.*?) ', line)
-            inout += "]"
+        for line in re.findall(r'<tr>((?:.|\n)*?)</tr>', param):
+            line = parser.handle(line).replace("|", "")
+            line = line.replace("---", "").strip()
+            line += " "
+            
+            # NOTE MPxModelEditorCommand 的 modelView 方法不合规范
+            if "]" not in line and func_name == "modelView":
+                line = "[out] %s" % line
+
+            regx = r'(\[(?:in|out|in,out)\]) (.*?) '
+            _,inout, name, instruction = re.split(regx, line)
+
             if len(keywords[name]) == 2:
                 param_type,default = keywords[name]
                 params += "%-5s %-20s %-15s %-10s %s\n" % (inout,param_type, name, "{default:%s}"%default, instruction)
@@ -185,14 +197,19 @@ def main():
     func_dict, html_dict = get_dict()
 
     OpenMaya_dict = {}
-    for module in func_dict:
+    for i,module in enumerate(func_dict):
+        # if i < 5: continue
         OpenMaya_dict[module] = {}
         for j, func in enumerate(func_dict[module]):
-            print func
+            # if j < 150:continue
+            print i,j,func
             OpenMaya_dict[module][func] = {}
             path = html_dict[func]
             with open(path, 'r') as f:
                 html = f.read()
+
+            website = r"http://help.autodesk.com/view/MAYAUL/2019/ENU/?guid=Maya_SDK_MERGED_cpp_ref_"
+            html_file = website + os.path.split(path)[-1].replace(".","_")
 
             for content in re.split(r'<h2 class="groupheader">', html):
                 # NOTE 有两个HTML含有非法字符
@@ -210,6 +227,7 @@ def main():
                     for anchor,method in zip(anchor_list,item_list):
                         name, description, params, returns = itemParser(method)
                         OpenMaya_dict[module][func]["method"][name] = {
+                            "link": "%s#%s" % (html_file, anchor),
                             "anchor": anchor,
                             "description": description,
                             "param": params,
@@ -223,19 +241,17 @@ def main():
                     for anchor, constructor in zip(anchor_list, item_list):
                         _, description, params, returns = itemParser(constructor)
                         OpenMaya_dict[module][func]["constructor"].append({
+                            "link": "%s#%s" % (html_file, anchor),
                             "anchor": anchor,
                             "description": description,
                             "param": params,
                             "return": returns,
                         })
 
-                # break
-            break
-        break
 
     output = os.path.join(DIR, "test.json")
     with open(output, 'w') as f:
-        json.dump(OpenMaya_dict, f, encoding="utf-8")
+        json.dump(OpenMaya_dict, f,indent=4, encoding="utf-8")
     # print OpenMaya_dict["OpenMayaAnim"]["MFnClip"]["constructor"][0]["header"]
 
 
