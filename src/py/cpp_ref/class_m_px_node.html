@@ -2455,7 +2455,7 @@ Protected Member Functions</h2></td></tr>
 <p>USE _setDoNotWrite() IN SCRIPT. </p>
 <p>Use this method to mark the "do not write" state of this proxy node.</p>
 <p>If set, this node will not be saved when the Maya model is written out.</p>
-<p>NOTES: 1. Plug-in "requires" information will be written out with the model when saved. But a subsequent reload and resave of the file will cause these to go away. 2. If this node is a DAG and has a parent or children, the "do not write" flag of the parent or children will not be set. It is the developerﾒs responsibility to ensure that the resulting scene file is capable of being read in without errors due to unwritten nodes.</p>
+<p>NOTES: 1. Plug-in "requires" information will be written out with the model when saved. But a subsequent reload and resave of the file will cause these to go away. 2. If this node is a DAG and has a parent or children, the "do not write" flag of the parent or children will not be set. It is the developers responsibility to ensure that the resulting scene file is capable of being read in without errors due to unwritten nodes.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">flag</td><td>True if the user node should not be saved. </td></tr>
