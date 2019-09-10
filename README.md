@@ -35,7 +35,6 @@ VS Code Extension for Autodesk Maya Developer
 - [ ] pymel 
 - [ ] maya.mel
 - [ ] pyside
-- [ ] pyside2
 - [ ] Qt.py
 
 

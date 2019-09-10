@@ -48,13 +48,45 @@ class Logger {
         let time = TimeUtils.getTime();
         if (!log || !log.split)
             return;
-        this._outputPanel.appendLine(util.format('Maya Intellisense [%s][%s]\t %s', time, type, log));
+        this._outputPanel.appendLine(util.format('Maya Dev [%s][%s]\t %s', time, type, log));
     }
 }
 exports.Logger = Logger;
 function activate(context) {
-    let outputPanel = vscode.window.createOutputChannel('Maya Intellisense');
+    let outputPanel = vscode.window.createOutputChannel('Maya Dev');
     Logger.registerOutputPanel(outputPanel);
+    let pythonExt = vscode.extensions.getExtension('ms-python.python');
+    let api = pythonExt.exports;
+    Logger.info(`pythonExt: ${Object.keys(pythonExt)}`);
+    Logger.info(`pythonExt.id: ${pythonExt.id}`);
+    Logger.info(`pythonExt.extensionPath: ${pythonExt.extensionPath}`);
+    Logger.info(`api: ${Object.keys(api)}`);
+    api.ready.then(values => {
+        Logger.info(`=====================================`);
+        Logger.info(`==========extension ready============`);
+        Logger.info(`=====================================`);
+        Logger.info(`values : ${typeof values}`);
+        Logger.info(`values : ${Object.keys(values)}`);
+        Logger.info(`values.length : ${Object.keys(values).length}`);
+        for (const key in values) {
+            Logger.info(`key : ${key}`);
+            Logger.info(`typeof : ${typeof key}`);
+            Logger.info(`hasOwnProperty : ${values.hasOwnProperty(key)}`);
+        }
+        Logger.info(`=====================================`);
+        Logger.info(`=====================================`);
+        Logger.info(`=====================================`);
+        let pythonConfig = vscode.workspace.getConfiguration("python");
+        let pythonPath = pythonConfig.get("pythonPath");
+        Logger.info(`pythonConfig : ${pythonConfig}`);
+        Logger.info(`pythonConfig keys : ${Object.keys(pythonConfig)}`);
+        for (const key in pythonConfig) {
+            Logger.info(`key : ${key}`);
+            Logger.info(`typeof : ${typeof key}`);
+            Logger.info(`hasOwnProperty : ${values.hasOwnProperty(key)}`);
+        }
+        Logger.info(`pythonPath : ${pythonPath}`);
+    });
     let mel_completions = [];
     let cmds_completions = [];
     // NOTE 初始化插件的时候 
@@ -70,7 +102,9 @@ function activate(context) {
         let item = new vscode.CompletionItem(command, vscode.CompletionItemKind.Function);
         item.detail = command;
         // doc = cmds['completions'][command]['instruction'];
-        item.documentation = cmds_data['completions'][command]['instruction'];
+        const instruction = new vscode.MarkdownString(cmds_data['completions'][command]['instruction']);
+        instruction.isTrusted = true;
+        item.documentation = instruction;
         cmds_completions.push(item);
     }
     function getImportName(documentText, pacakge) {
@@ -102,7 +136,7 @@ function activate(context) {
         }
     }, '.' // NOTE triggered whenever a '.' is being typed
     );
-    const cmds_arg_compeletion = vscode.languages.registerCompletionItemProvider('python', {
+    const cmds_args_compeletion = vscode.languages.registerCompletionItemProvider('python', {
         provideCompletionItems(document, position) {
             let cmds_args = [];
             let cmds = getImportName(document.getText(), "cmds");
@@ -143,7 +177,7 @@ function activate(context) {
         }
     }, '(', ',');
     // Logger.info(`data: ${data['completions']}`);
-    context.subscriptions.push(cmds_func_compeletion, cmds_arg_compeletion);
+    context.subscriptions.push(cmds_func_compeletion, cmds_args_compeletion);
 }
 exports.activate = activate;
 //# sourceMappingURL=extension.js.map

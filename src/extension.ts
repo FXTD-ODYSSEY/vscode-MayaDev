@@ -49,14 +49,52 @@ export class Logger {
 		let util = require('util');
 		let time = TimeUtils.getTime();
 		if (!log || !log.split) return;
-		this._outputPanel.appendLine(util.format('Maya Intellisense [%s][%s]\t %s', time, type, log));
+		this._outputPanel.appendLine(util.format('Maya Dev [%s][%s]\t %s', time, type, log));
 	}
 }
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let outputPanel = vscode.window.createOutputChannel('Maya Intellisense');
+
+
+	let outputPanel = vscode.window.createOutputChannel('Maya Dev');
 	Logger.registerOutputPanel(outputPanel);
+
+
+	let pythonExt = vscode.extensions.getExtension('ms-python.python');
+	let api = pythonExt.exports;
+
+	Logger.info(`pythonExt: ${Object.keys(pythonExt)}`);
+	Logger.info(`pythonExt.id: ${pythonExt.id}`);
+	Logger.info(`pythonExt.extensionPath: ${pythonExt.extensionPath}`);
+	Logger.info(`api: ${Object.keys(api)}`);
+	api.ready.then(values => {
+		Logger.info(`=====================================`);
+		Logger.info(`==========extension ready============`);
+		Logger.info(`=====================================`);
+		Logger.info(`values : ${typeof values}`);
+		Logger.info(`values : ${Object.keys(values)}`); 
+		Logger.info(`values.length : ${Object.keys(values).length}`); 
+		for (const key in values) {
+			Logger.info(`key : ${key}`); 
+			Logger.info(`typeof : ${typeof key}`); 
+			Logger.info(`hasOwnProperty : ${values.hasOwnProperty(key)}`); 
+		}
+		Logger.info(`=====================================`); 
+		Logger.info(`=====================================`); 
+		Logger.info(`=====================================`); 
+		let pythonConfig = vscode.workspace.getConfiguration("python")
+		let pythonPath = pythonConfig.get("pythonPath")
+		Logger.info(`pythonConfig : ${pythonConfig}`); 
+		Logger.info(`pythonConfig keys : ${Object.keys(pythonConfig)}`); 
+		for (const key in pythonConfig) {
+			Logger.info(`key : ${key}`);
+			Logger.info(`typeof : ${typeof key}`);
+			Logger.info(`hasOwnProperty : ${values.hasOwnProperty(key)}`);
+		}
+		Logger.info(`pythonPath : ${pythonPath}`); 
+	})
+
 
 	let mel_completions: Array<vscode.CompletionItem> = [];
 	let cmds_completions: Array<vscode.CompletionItem> = [];
@@ -72,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// });
 
 	// NOTE 获取 cmds 数据存放到数组当中
-	for (let command in cmds_data['completions']){
+	for (let command in cmds_data['completions']) {
 		let item = new vscode.CompletionItem(command, vscode.CompletionItemKind.Function);
 		item.detail = command;
 
@@ -83,7 +121,7 @@ export function activate(context: vscode.ExtensionContext) {
 		cmds_completions.push(item);
 	}
 
-	function getImportName(documentText:string,pacakge:string){
+	function getImportName(documentText: string, pacakge: string) {
 		let cmds = pacakge;
 
 		// NOTE 如果没有 导入相关的包 则 关闭自动补全
@@ -100,7 +138,7 @@ export function activate(context: vscode.ExtensionContext) {
 			if (match != null && match.length >= 2 && match[1] != "")
 				cmds = match[1].trim();
 		}
-		
+
 		return cmds;
 	}
 
@@ -109,7 +147,7 @@ export function activate(context: vscode.ExtensionContext) {
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
 
-				let cmds = getImportName(document.getText(),"cmds");
+				let cmds = getImportName(document.getText(), "cmds");
 
 				// NOTE `document.lineAt(position).text`  获取当前光标所在行的文本
 				let linePrefix = document.lineAt(position).text.substr(0, position.character);
@@ -121,7 +159,7 @@ export function activate(context: vscode.ExtensionContext) {
 		'.' // NOTE triggered whenever a '.' is being typed
 	);
 
-	const cmds_arg_compeletion = vscode.languages.registerCompletionItemProvider(
+	const cmds_args_compeletion = vscode.languages.registerCompletionItemProvider(
 		'python',
 		{
 			provideCompletionItems(document: vscode.TextDocument, position: vscode.Position) {
@@ -136,7 +174,7 @@ export function activate(context: vscode.ExtensionContext) {
 				let match = linePrefix.split("(")[0].match(new RegExp(`${cmds}\.(.*)`, "i"));
 				if (match == null) return undefined;
 				let func = match[1];
-				
+
 				cmds_data['completions'][func]['param'].forEach(this_item => {
 					let item = new vscode.CompletionItem(`${this_item['shortName']}=`, vscode.CompletionItemKind.Function);
 					item.detail = `${this_item['longName']} [${this_item['type']}]`;
@@ -149,13 +187,13 @@ export function activate(context: vscode.ExtensionContext) {
 				});
 
 				Logger.info(`mode: ${cmds_data['completions'][func]['mode']}`);
-				for (let mode in cmds_data['completions'][func]['mode']){
-					if(mode == "query"){
+				for (let mode in cmds_data['completions'][func]['mode']) {
+					if (mode == "query") {
 						let item = new vscode.CompletionItem(`q=`, vscode.CompletionItemKind.Function);
 						item.detail = `query [boolean]`;
 						item.documentation = `enable query mode`;
 						cmds_args.push(item);
-					} else if (mode == "edit"){
+					} else if (mode == "edit") {
 						let item = new vscode.CompletionItem(`e=`, vscode.CompletionItemKind.Function);
 						item.detail = `edit [boolean]`;
 						item.documentation = `enable edit mode`;
@@ -165,12 +203,12 @@ export function activate(context: vscode.ExtensionContext) {
 				return [...cmds_args];
 			}
 		},
-		'(',','
+		'(', ','
 	);
 
 	// Logger.info(`data: ${data['completions']}`);
 	context.subscriptions.push(
 		cmds_func_compeletion,
-		cmds_arg_compeletion,
+		cmds_args_compeletion,
 	);
 }
