@@ -1,7 +1,7 @@
 {
-	"name": "MayaGem",
-	"displayName": "Maya Module Intellisense and Debugger",
-	"version": "0.0.2",
+	"name": "MayaDev",
+	"displayName": "Autodesk Maya Python Module Intellisense and Debugger",
+	"version": "1.0.0",
 	"publisher": "FXTD-Odyssey",
 	"repository": {
 		"type": "git",
@@ -33,6 +33,5 @@
 		"@types/vscode": "^1.32.0"
 	},
 	"extensionDependencies": [
-		"ms-python.python"
 	]
 }
