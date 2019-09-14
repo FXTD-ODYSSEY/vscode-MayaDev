@@ -211,51 +211,55 @@ export function activate(context: vscode.ExtensionContext) {
 
 				// NOTE `document.lineAt(position).text`  获取当前光标所在行的文本
 				let linePrefix = document.lineAt(position).text.substr(0, position.character);
-				if (linePrefix.search(/\(/i) == -1) return undefined;
+				if (linePrefix.search(/\(/i) != -1){
 
-				// Note 匹配获取当前函数的名称
-				let regx = new RegExp(`${cmds}\.(.*)\s*\(`, "i");
-				let match = linePrefix.match(regx);
-				if (match == null) return undefined;
-				// Note 获取数组中最后一个符合条件的对象
-				let func = match[match.length - 1];
-
-				// Note 更具匹配的函数获取参数
-				cmds_data[func]['param'].forEach(this_item => {
-					let item = new vscode.CompletionItem(`${this_item['shortName']}=`, vscode.CompletionItemKind.TypeParameter);
-					item.detail = `${this_item['longName']} [${this_item['type']}]`;
-					item.documentation = this_item['instruction'];
-					cmds_args.push(item);
-					item = new vscode.CompletionItem(`${this_item['longName']}=`, vscode.CompletionItemKind.TypeParameter);
-					item.detail = `${this_item['longName']} [${this_item['type']}]`;
-					item.documentation = this_item['instruction'];
-					cmds_args.push(item);
-				});
-
-				// NOTE 添加 query 和 edit 模式
-				for (let index in cmds_data[func]['mode']) {
-					let mode = cmds_data[func]['mode'][index];
-					if (mode == "query") {
-						let item = new vscode.CompletionItem(`query=1`, vscode.CompletionItemKind.TypeParameter);
-						item.detail = `query [boolean]`;
-						item.documentation = `enable query mode`;
+					// Note 匹配获取当前函数的名称
+					let regx = new RegExp(`${cmds}\.(.*)\s*\(`, "i");
+					let match = linePrefix.match(regx);
+					if (match == null) return undefined;
+					// Note 获取数组中最后一个符合条件的对象
+					let func = match[match.length - 1];
+	
+					// Note 根据匹配的函数获取参数
+					cmds_data[func]['param'].forEach(this_item => {
+						let item = new vscode.CompletionItem(`${this_item['shortName']}=`, vscode.CompletionItemKind.TypeParameter);
+						item.detail = `${this_item['longName']} [${this_item['type']}]`;
+						item.documentation = this_item['instruction'];
 						cmds_args.push(item);
-						item = new vscode.CompletionItem(`q=1`, vscode.CompletionItemKind.TypeParameter);
-						item.detail = `query [boolean]`;
-						item.documentation = `enable query mode`;
+						item = new vscode.CompletionItem(`${this_item['longName']}=`, vscode.CompletionItemKind.TypeParameter);
+						item.detail = `${this_item['longName']} [${this_item['type']}]`;
+						item.documentation = this_item['instruction'];
 						cmds_args.push(item);
-					} else if (mode == "edit") {
-						let item = new vscode.CompletionItem(`edit=1`, vscode.CompletionItemKind.TypeParameter);
-						item.detail = `edit [boolean]`;
-						item.documentation = `enable edit mode`;
-						cmds_args.push(item);
-						item = new vscode.CompletionItem(`e=1`, vscode.CompletionItemKind.TypeParameter);
-						item.detail = `edit [boolean]`;
-						item.documentation = `enable edit mode`;
-						cmds_args.push(item);
+					});
+	
+					// NOTE 添加 query 和 edit 模式
+					for (let index in cmds_data[func]['mode']) {
+						let mode = cmds_data[func]['mode'][index];
+						if (mode == "query") {
+							let item = new vscode.CompletionItem(`query=1`, vscode.CompletionItemKind.TypeParameter);
+							item.detail = `query [boolean]`;
+							item.documentation = `enable query mode`;
+							cmds_args.push(item);
+							item = new vscode.CompletionItem(`q=1`, vscode.CompletionItemKind.TypeParameter);
+							item.detail = `query [boolean]`;
+							item.documentation = `enable query mode`;
+							cmds_args.push(item);
+						} else if (mode == "edit") {
+							let item = new vscode.CompletionItem(`edit=1`, vscode.CompletionItemKind.TypeParameter);
+							item.detail = `edit [boolean]`;
+							item.documentation = `enable edit mode`;
+							cmds_args.push(item);
+							item = new vscode.CompletionItem(`e=1`, vscode.CompletionItemKind.TypeParameter);
+							item.detail = `edit [boolean]`;
+							item.documentation = `enable edit mode`;
+							cmds_args.push(item);
+						}
 					}
+					return [...cmds_args];
 				}
-				return [...cmds_args];
+
+
+				return undefined;
 			}
 		},
 		'(', ','

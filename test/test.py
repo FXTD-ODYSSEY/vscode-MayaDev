@@ -7,4 +7,5 @@ import maya.api.OpenMaya as om
 
 
 cmds.window(e=1)
-cmds.
+
+OpenMaya.MSelectionList()
