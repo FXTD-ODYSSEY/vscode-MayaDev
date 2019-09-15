@@ -3,7 +3,7 @@
 VS Code Extension for Autodesk Maya Developer
 </h1>
 
-## MayaGem Feature
+## MayaDev Feature
 
 1. faster python intellisense for maya python module
 
@@ -29,16 +29,20 @@ VS Code Extension for Autodesk Maya Developer
 
 ### module intellisense feature
 
+[MayaDoc](https://github.com/FXTD-ODYSSEY/MayaDoc) 
+this repo is how I extract the data from the Maya document
+
 - [x] maya.cmds 
-- [ ] OpenMaya 1.0
+- [x] OpenMaya 1.0
 - [ ] OpenMaya 2.0
-- [ ] pymel 
+- [x] pymel 
 - [ ] maya.mel
-- [ ] pyside
-- [ ] Qt.py
+- [x] pyside
+- [ ]  ~~Qt.py~~
 
+---
 
-- [ ] MEL file support
+- [ ]  ~~MEL file support~~
 
 ### debug feature
 
@@ -49,21 +53,24 @@ VS Code Extension for Autodesk Maya Developer
 ### extension feature
 
 - [ ] send code to the maya commandPort
-- [ ] run file with send code command
-- [ ] depend on the Python Extension
-- [ ] get the module&variable information from Python Extension
-- [ ] intellisense detail level
+- [ ] depend on the Python Extension for ptvsd debug
+- [ ] use the tree-sitter module to anaylize the python Syntax Tree 
+- [ ] add configuration for intellisense detail level
 
 ## Q&A
-### Why rebuild the intellisense for maya module ?
+### Why rebuild the intellisense for maya python module ?
 
-> Actually,`Python Extension` is very power extension for editing python.  
-> it has a power ability could build up autocoplete for the any python module.  
-> if you want to activate it, just add the module path to setting `python.autoComplete.extraPaths`  
-
-> However,maya module is too large for compile, cmds module has thousands a vaialble command,every time when I use VScode autoComplete feature, I have to wait for a couple seconds,That is very painful experience for developer.  
-> so I start to think what make the intellisense slow,and then I figure out the list must generate every time I trigger the suggest.   
-> That idea is totally fine in python extension,because the module may change or add some new function anyway.  
-> But for maya module that cause a big performance problem,so I think that maya module is already a blackbox API,why not just save the data into memory and every time I trigger the suggest just get data from memory.   
-> That's why I rebuild the maya module intellisense ,  
-> you could check the data I extract from maya document in data repository
+> Actually , `Python Extension` is very powerful extension for python.  
+> it has a powerful feature to build up the autocompletion for any python module.  
+> if you want to activate it , just add the module path to the extension configuration `python.autoComplete.extraPaths`  
+ 
+> However , maya module is too large , for example , `cmds` module contain thousands of avaialble command , every time when you use python autoComplete feature, you have to wait for a couple seconds , That is extremely painful experience for developer.  
+> And I find some issue already post in the github , but without any better solution. [issue](https://github.com/davidhalter/jedi/issues/843)   
+> so I start to think what make the intellisense slow , and then I figure out that the autocompletion list must update every time we trigger the suggesttion.   
+> That idea is totally fine in `Python Extension` , because the related module may change or add some new function for multiple purpose.  
+> But for maya module that could be a huge performance problem , and the maya module is already a blackbox API , why not just save the data into memory and every time we trigger the suggestion just get data from memory directly.   
+> That's why I rebuild the maya module intellisense for better develope experience ,  
+> you could check the data I extract from maya document in that [repository](https://github.com/FXTD-ODYSSEY/MayaDoc)
+> the `mayaDev` extension will get the data from json when you activate it.
+> And then I use the tree-sitter module to parse the source code , then I will get the perfect python Syntax Tree to anaylize the corresponding module data using typescript.
+> you could check the awesome tree-sitter module fearture [here](https://tree-sitter.github.io/tree-sitter/playground)
